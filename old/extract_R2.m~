@@ -1,0 +1,20 @@
+function R2=extract_R2(SST_nii, Res_nii, output_dir)
+%calculate the R2 from the ratio between residuals and total variance
+% var_nii: file containing the total sum of squares of data
+% Res_nii: file containing the sum of squaredR residuals
+
+V1 = spm_vol(SST_nii); % read header of a nii file
+SST = spm_read_vols(V1); % use the header of the nii file (and potentially a mask) to read the data and gives it in Y.
+
+V2 = spm_vol(Res_nii); % read header of a nii file
+Res = spm_read_vols(V2); % use the header of the nii file (and potentially a mask) to read the data and gives it in Y.
+
+if exist('output_dir','var')==0
+    output_dir=fileparts(V2.fname);
+end
+
+V=V2;
+V.fname=fullfile(output_dir,'R2.nii');
+R2=1-(Res./SST);
+hist(R2(:))
+spm_write_vol(V,R2);
